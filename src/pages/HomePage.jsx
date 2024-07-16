@@ -3,6 +3,7 @@ import NoteList from '../components/NoteList';
 import { getAllNotes } from '../utils/local-data'
 import { FiPlus } from 'react-icons/fi';
 import { Link, useSearchParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import SearchBar from '../components/SearchBar';
 
 function HomePageWrapper() {
@@ -61,5 +62,10 @@ class HomePage extends React.Component {
     )
   }
 }
+
+HomePage.propTypes = {
+  defaultKeyword: PropTypes.string,
+  keywordChange: PropTypes.func.isRequired,
+};
 
 export default HomePageWrapper;
