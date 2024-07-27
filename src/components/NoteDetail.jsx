@@ -1,14 +1,15 @@
 import React from "react";
-import { showFormattedDate } from "../utils";
-import NoteItemAction from "./NoteItemAction";
+import DOMPurify from "dompurify";
 import PropTypes from 'prop-types';
 
 function NoteDetail({ id, title, body, createdAt, archived, onDelete, onArchive }) {
+  const sanitizedBody = DOMPurify.sanitize(body);
+
   return (
     <>
       <h3 className="detail-page__name">{title}</h3>
       <p className="detail-page__createdAt">{showFormattedDate(createdAt)}</p>
-      <div className="detail-page__body">{body}</div>
+      <p className="detail-page__body" dangerouslySetInnerHTML={{ __html: sanitizedBody }} />
       <NoteItemAction id={id} archived={archived} onDelete={onDelete} onArchive={onArchive} />
     </>
   )
