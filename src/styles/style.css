@@ -222,6 +222,10 @@ main {
   font-size: 28px;
 }
 
+.login-page h2, .register-page h2 {
+  font-weight: normal;
+}
+
 .input-login, .input-register {
   margin: 32px 0;
 }
