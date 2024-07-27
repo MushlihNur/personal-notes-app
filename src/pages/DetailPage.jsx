@@ -14,7 +14,7 @@ function DetailPage() {
       setNote(data);
       setIsLoading(false);
     });
-  })
+  }, [id])
 
   async function onDeleteHandler(id) {
     await deleteNote(id);
