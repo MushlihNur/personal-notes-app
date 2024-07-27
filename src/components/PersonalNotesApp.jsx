@@ -9,6 +9,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import { getUserLogged, putAccessToken } from "../utils/api";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import { FiLogOut } from "react-icons/fi";
 
 class PersonalNotesApp extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class PersonalNotesApp extends React.Component {
     }
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this);
+    this.onLogout = this.onLogout.bind(this);
   }
 
   async onLoginSuccess({ accessToken }) {
@@ -30,6 +32,15 @@ class PersonalNotesApp extends React.Component {
         authedUser: data,
       };
     });
+  }
+
+  onLogout() {
+    this.setState(() => {
+      return {
+        authedUser: null,
+      }
+    });
+    putAccessToken('');
   }
 
   async componentDidMount() {
@@ -71,7 +82,8 @@ class PersonalNotesApp extends React.Component {
             <h1>
               <Link to={'/'}>Aplikasi Catatan</Link>
             </h1>
-            <Navigation/>
+            <Navigation />
+            <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
         </header>
         <main>
           <Routes>
