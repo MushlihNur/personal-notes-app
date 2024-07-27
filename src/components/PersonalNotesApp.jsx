@@ -1,4 +1,5 @@
 import React from "react";
+import { HOME, ARCHIVES, NOTE_DETAIL, ADD_NOTE, LOGIN, REGISTER } from '../constants/routes';
 import { Link, Route, Routes } from "react-router-dom";
 import HomePageWrapper from "../pages/HomePage";
 import DetailPageWrapper from "../pages/DetailPage";
@@ -100,16 +101,16 @@ class PersonalNotesApp extends React.Component {
           <ThemeProvider value={this.state}>
             <div className="app-container">
               <header>
-                  <h1>
-                    <Link to={'/'}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
-                  </h1>
-                  <ToggleLocale />
-                  <ToggleTheme />
+                <h1>
+                  <Link to={HOME}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
+                </h1>
+                <ToggleLocale />
+                <ToggleTheme />
               </header>
               <main>
                 <Routes>
-                  <Route path="/*" element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
-                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path={LOGIN} element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
+                  <Route path={REGISTER} element={<RegisterPage />} />
                 </Routes>
               </main>
             </div>
@@ -123,20 +124,20 @@ class PersonalNotesApp extends React.Component {
         <ThemeProvider value={this.state}>
           <div className="app-container">
             <header>
-                <h1>
-                  <Link to={'/'}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
-                </h1>
-                <Navigation />
-                <ToggleLocale />
-                <ToggleTheme />
-                <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
+              <h1>
+                <Link to={HOME}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
+              </h1>
+              <Navigation />
+              <ToggleLocale />
+              <ToggleTheme />
+              <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
             </header>
             <main>
               <Routes>
-                <Route path="/" element={<HomePageWrapper/>}/>
-                <Route path="/archives" element={<ArchivePageWrapper/>} />
-                <Route path="/notes/:id" element={<DetailPageWrapper/>}/>
-                <Route path="/notes/new" element={<AddNotePage />}/>
+                <Route path={HOME} element={<HomePageWrapper/>}/>
+                <Route path={ARCHIVES} element={<ArchivePageWrapper/>} />
+                <Route path={NOTE_DETAIL} element={<DetailPageWrapper/>}/>
+                <Route path={ADD_NOTE} element={<AddNotePage />}/>
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </main>
