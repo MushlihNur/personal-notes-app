@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import useInput from "../hooks/useInpus";
+import { LocaleConsumer } from "../contexts/LocaleContext";
 
 function RegisterInput({ register }) {
   const [name, onNameChangeHandler] = useInput("");
@@ -11,23 +12,30 @@ function RegisterInput({ register }) {
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
-    password !== confirmPassword ? 
-    alert('Password and password confirm must be same.') :
+    if (password !== confirmPassword) {
+      alert('Password dan konfirmasi password harus sama.');
+      return;
+    }
+    
     register({ name, email, password });
   }
 
   return (
-    <form onSubmit={onSubmitHandler} className="input-login">
-      <label htmlFor="name">Nama</label>
-      <input type="text" id="name" value={name} onChange={onNameChangeHandler}/>
-      <label htmlFor="email">Email</label>
-      <input type="email" id="email" value={email} onChange={onEmailChangeHandler}/>
-      <label htmlFor="passwrod">Password</label>
-      <input type="password" id="password" value={password} onChange={onPasswordChangeHandler}/>
-      <label htmlFor="confirmPasswrod">Confirm Password</label>
-      <input type="password" id="confirmPassword" value={confirmPassword} onChange={onConfirmPasswordChange}/>
-      <button type="submit">Login</button>
-    </form>
+    <LocaleConsumer>
+      {({ locale }) => (
+        <form onSubmit={onSubmitHandler} className="input-login">
+          <label htmlFor="name">{locale === 'id' ? 'Nama' : 'Name'}</label>
+          <input type="text" id="name" value={name} onChange={onNameChangeHandler}/>
+          <label htmlFor="email">{locale === 'id' ? 'Email' : 'Email'}</label>
+          <input type="email" id="email" value={email} onChange={onEmailChangeHandler}/>
+          <label htmlFor="password">{locale === 'id' ? 'Kata Sandi' : 'Password'}</label>
+          <input type="password" id="password" value={password} onChange={onPasswordChangeHandler}/>
+          <label htmlFor="confirmPassword">{locale === 'id' ? 'Konfirmasi Kata Sandi' : 'Confirm Password'}</label>
+          <input type="password" id="confirmPassword" value={confirmPassword} onChange={onConfirmPasswordChange}/>
+          <button type="submit">{locale === 'id' ? 'Daftar' : 'Register'}</button>
+        </form>
+      )}
+    </LocaleConsumer>
   )
 }
 
@@ -35,4 +43,4 @@ RegisterInput.propTypes = {
   register: PropTypes.func.isRequired,
 };
 
-export default RegisterInput
+export default RegisterInput;

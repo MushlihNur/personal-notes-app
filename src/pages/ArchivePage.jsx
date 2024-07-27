@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import PropTypes from 'prop-types';
 import SearchBar from "../components/SearchBar";
 import { getArchivedNotes } from "../utils/api";
+import { LocaleConsumer } from "../contexts/LocaleContext";
 
 function ArchivePageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,15 +57,19 @@ class ArchivePage extends React.Component {
     });
 
     return (
-      <section className="archives-page">
-        <h2>Cacatan Arsip</h2>
-        <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler}/>
-        {notes.length === 0 ? (
-          <p>Arsip kosong</p>
-        ) : (
-          <NoteList notes={notes} />
+      <LocaleConsumer>
+        {({ locale }) => (
+          <section className="archives-page">
+            <h2>{locale === 'id' ? 'Catatan Arsip' : 'Archived Notes'}</h2>
+            <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler} />
+            {notes.length === 0 ? (
+              <p>{locale === 'id' ? 'Arsip kosong' : 'No archived notes'}</p>
+            ) : (
+              <NoteList notes={notes} />
+            )}
+          </section>
         )}
-      </section>
+      </LocaleConsumer>
     )
   }
 }

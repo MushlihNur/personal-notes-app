@@ -5,6 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SearchBar from '../components/SearchBar';
 import { getActiveNotes } from '../utils/api';
+import { LocaleConsumer } from '../contexts/LocaleContext';
 
 function HomePageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,18 +58,22 @@ class HomePage extends React.Component {
     });
 
     return (
-      <section className="homepage">
-        <h2>Cacatan Aktif</h2>
-        <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler}/>
-        {notes.length === 0 ? (
-          <p>Tidak ada catatan</p>
-        ) : (
-          <NoteList notes={notes} />
+      <LocaleConsumer>
+        {({ locale }) => (
+          <section className="homepage">
+            <h2>{locale === 'id' ? 'Catatan Aktif' : 'Active Notes'}</h2>
+            <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler} />
+            {notes.length === 0 ? (
+              <p>{locale === 'id' ? 'Tidak ada catatan' : 'No notes available'}</p>
+            ) : (
+              <NoteList notes={notes} />
+            )}
+            <div className="homepage__action">
+              <Link to="/notes/new" className='action'><FiPlus /></Link>
+            </div>
+          </section>
         )}
-        <div className="homepage__action">
-          <Link to="/notes/new" className='action'><FiPlus /></Link>
-        </div>
-      </section>
+      </LocaleConsumer>
     )
   }
 }

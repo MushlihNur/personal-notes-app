@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import useInput from "../hooks/useInpus";
+import { LocaleConsumer } from "../contexts/LocaleContext";
 
 function LoginInput({ login }) {
   const [email, onEmailChangeHandler] = useInput("");
@@ -12,13 +13,17 @@ function LoginInput({ login }) {
   }
 
   return (
-    <form onSubmit={onSubmitHandler} className="input-login">
-      <label htmlFor="email">Email</label>
-      <input type="email" id="email" value={email} onChange={onEmailChangeHandler}/>
-      <label htmlFor="passwrod">Password</label>
-      <input type="password" id="password" value={password} onChange={onPasswordChangeHandler}/>
-      <button type="submit">Login</button>
-    </form>
+    <LocaleConsumer>
+      {({ locale }) => (
+        <form onSubmit={onSubmitHandler} className="input-login">
+          <label htmlFor="email">{locale === 'id' ? 'Email' : 'Email'}</label>
+          <input type="email" id="email" value={email} onChange={onEmailChangeHandler}/>
+          <label htmlFor="password">{locale === 'id' ? 'Kata Sandi' : 'Password'}</label>
+          <input type="password" id="password" value={password} onChange={onPasswordChangeHandler}/>
+          <button type="submit">{locale === 'id' ? 'Masuk' : 'Login'}</button>
+        </form>
+      )}
+    </LocaleConsumer>
   )
 }
 

@@ -12,6 +12,8 @@ import RegisterPage from "../pages/RegisterPage";
 import { FiLogOut } from "react-icons/fi";
 import ToggleTheme from "./ToggleTheme";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import { LocaleProvider } from "../contexts/LocaleContext";
+import ToggleLocale from "./ToggleLocale";
 
 class PersonalNotesApp extends React.Component {
   constructor(props) {
@@ -29,6 +31,21 @@ class PersonalNotesApp extends React.Component {
             theme: newTheme
           };
         })
+      },
+      localeContext: {
+        locale: localStorage.getItem('locale') || 'id',
+        toggleLocale: () => {
+          this.setState((prevState) => {
+            const newLocale = prevState.localeContext.locale === 'id' ? 'en' : 'id';
+            localStorage.setItem('locale', newLocale);
+            return {
+              localeContext: {
+                ...prevState.localeContext,
+                locale: newLocale
+              }
+            }
+          });
+        }
       }
     }
 
@@ -79,47 +96,53 @@ class PersonalNotesApp extends React.Component {
 
     if (this.state.authedUser === null) {
       return (
-        <ThemeProvider value={this.state}>
-          <div className="app-container">
-            <header>
-                <h1>
-                  <Link to={'/'}>Aplikasi Catatan</Link>
-                </h1>
-                <ToggleTheme />
-            </header>
-            <main>
-              <Routes>
-                <Route path="/*" element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
-                <Route path="/register" element={<RegisterPage />} />
-              </Routes>
-            </main>
-          </div>
-        </ThemeProvider>
+        <LocaleProvider value={this.state.localeContext}>
+          <ThemeProvider value={this.state}>
+            <div className="app-container">
+              <header>
+                  <h1>
+                    <Link to={'/'}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
+                  </h1>
+                  <ToggleLocale />
+                  <ToggleTheme />
+              </header>
+              <main>
+                <Routes>
+                  <Route path="/*" element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                </Routes>
+              </main>
+            </div>
+          </ThemeProvider>
+        </LocaleProvider>
       )
     }
 
     return (
-      <ThemeProvider value={this.state}>
-        <div className="app-container">
-          <header>
-              <h1>
-                <Link to={'/'}>Aplikasi Catatan</Link>
-              </h1>
-              <Navigation />
-              <ToggleTheme />
-              <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
-          </header>
-          <main>
-            <Routes>
-              <Route path="/" element={<HomePageWrapper/>}/>
-              <Route path="/archives" element={<ArchivePageWrapper/>} />
-              <Route path="/notes/:id" element={<DetailPageWrapper/>}/>
-              <Route path="/notes/new" element={<AddNotePage />}/>
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </main>
-        </div>
-      </ThemeProvider>
+      <LocaleProvider value={this.state.localeContext}>
+        <ThemeProvider value={this.state}>
+          <div className="app-container">
+            <header>
+                <h1>
+                  <Link to={'/'}>{this.state.localeContext.locale === 'id' ? 'Aplikasi Catatan' : 'Notes App'}</Link>
+                </h1>
+                <Navigation />
+                <ToggleLocale />
+                <ToggleTheme />
+                <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
+            </header>
+            <main>
+              <Routes>
+                <Route path="/" element={<HomePageWrapper/>}/>
+                <Route path="/archives" element={<ArchivePageWrapper/>} />
+                <Route path="/notes/:id" element={<DetailPageWrapper/>}/>
+                <Route path="/notes/new" element={<AddNotePage />}/>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </main>
+          </div>
+        </ThemeProvider>
+      </LocaleProvider>
     )
   }
 }
