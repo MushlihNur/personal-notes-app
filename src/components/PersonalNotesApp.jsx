@@ -10,6 +10,8 @@ import { getUserLogged, putAccessToken } from "../utils/api";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { FiLogOut } from "react-icons/fi";
+import ToggleTheme from "./ToggleTheme";
+import { ThemeProvider } from "../contexts/ThemeContext";
 
 class PersonalNotesApp extends React.Component {
   constructor(props) {
@@ -18,6 +20,16 @@ class PersonalNotesApp extends React.Component {
     this.state = {
       authedUser: null,
       initializing: true,
+      theme: localStorage.getItem('theme') || 'light',
+      toggleTheme: () => {
+        this.setState((prevState) => {
+          const newTheme = prevState.theme === 'light' ? 'dark' : 'light';
+          localStorage.setItem('theme', newTheme);
+          return {
+            theme: newTheme
+          };
+        })
+      }
     }
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this);
@@ -44,6 +56,7 @@ class PersonalNotesApp extends React.Component {
   }
 
   async componentDidMount() {
+    document.documentElement.setAttribute('data-theme', this.state.theme);
     const { data } = await getUserLogged();
     this.setState(() => {
       return {
@@ -53,6 +66,12 @@ class PersonalNotesApp extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.theme !== this.state.theme) {
+      document.documentElement.setAttribute('data-theme', this.state.theme);
+    }
+  }
+
   render() {
     if (this.state.initializing) {
       return null;
@@ -60,41 +79,47 @@ class PersonalNotesApp extends React.Component {
 
     if (this.state.authedUser === null) {
       return (
+        <ThemeProvider value={this.state}>
+          <div className="app-container">
+            <header>
+                <h1>
+                  <Link to={'/'}>Aplikasi Catatan</Link>
+                </h1>
+                <ToggleTheme />
+            </header>
+            <main>
+              <Routes>
+                <Route path="/*" element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
+                <Route path="/register" element={<RegisterPage />} />
+              </Routes>
+            </main>
+          </div>
+        </ThemeProvider>
+      )
+    }
+
+    return (
+      <ThemeProvider value={this.state}>
         <div className="app-container">
           <header>
               <h1>
                 <Link to={'/'}>Aplikasi Catatan</Link>
               </h1>
+              <Navigation />
+              <ToggleTheme />
+              <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
           </header>
           <main>
             <Routes>
-              <Route path="/*" element={<LoginPage loginSuccess={this.onLoginSuccess} />} />
-              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/" element={<HomePageWrapper/>}/>
+              <Route path="/archives" element={<ArchivePageWrapper/>} />
+              <Route path="/notes/:id" element={<DetailPageWrapper/>}/>
+              <Route path="/notes/new" element={<AddNotePage />}/>
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
         </div>
-      )
-    }
-
-    return (
-      <div className="app-container">
-        <header>
-            <h1>
-              <Link to={'/'}>Aplikasi Catatan</Link>
-            </h1>
-            <Navigation />
-            <button onClick={this.onLogout} className="button-logout"><FiLogOut />{this.state.authedUser.name}</button>
-        </header>
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePageWrapper/>}/>
-            <Route path="/archives" element={<ArchivePageWrapper/>} />
-            <Route path="/notes/:id" element={<DetailPageWrapper/>}/>
-            <Route path="/notes/new" element={<AddNotePage />}/>
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-      </div>
+      </ThemeProvider>
     )
   }
 }
