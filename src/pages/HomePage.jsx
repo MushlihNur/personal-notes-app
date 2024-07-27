@@ -1,10 +1,10 @@
 import React from 'react';
 import NoteList from '../components/NoteList';
-import { getAllNotes } from '../utils/local-data'
 import { FiPlus } from 'react-icons/fi';
 import { Link, useSearchParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SearchBar from '../components/SearchBar';
+import { getActiveNotes } from '../utils/api';
 
 function HomePageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,11 +22,21 @@ class HomePage extends React.Component {
     super(props);
 
     this.state = {
-      notes: getAllNotes() || [],
+      notes: [],
       keyword: '',
     }
 
     this.onKeywordChangeHandler = this.onKeywordChangeHandler.bind(this);
+  }
+
+  async componentDidMount() {
+    const { data } = await getActiveNotes();
+
+    this.setState(() => {
+      return {
+        notes: data
+      }
+    });
   }
 
   onKeywordChangeHandler(keyword) {

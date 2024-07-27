@@ -1,74 +1,64 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PropTypes from 'prop-types';
-import { archiveNote, unarchiveNote, deleteNote, getNote } from "../utils/local-data";
 import NoteDetail from "../components/NoteDetail";
+import { archiveNote, deleteNote, getNote, unarchiveNote } from "../utils/api";
 
-
-function DetailPageWrapper() {
+function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  return <DetailPage id={id} navigate={navigate} />
+  const [note, setNote] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    getNote(id).then(({ data }) => {
+      setNote(data);
+      setIsLoading(false);
+    });
+  })
+
+  async function onDeleteHandler(id) {
+    await deleteNote(id);
+    note.archived ? navigate("/archives")
+    : navigate("/");
 }
 
-class DetailPage extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      note: getNote(props.id),
-    };
-
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onArchiveHandler = this.onArchiveHandler.bind(this);
-  }
-
-  onDeleteHandler(id) {
-    deleteNote(id);
-
-    this.setState(() => {
-      return {
-        note: null,
-      };
-    });
-
-    this.props.navigate('/');
-  }
-
-  onArchiveHandler(id) {
-    const { note } = this.state;
-
-    if (note.archived) {
-      unarchiveNote(id);
-      this.props.navigate('/');
-    } else {
-      archiveNote(id);
-      this.props.navigate('/archives');
-    }
-
-    this.setState({
-      note: getNote(id),
-    });
-  }
-
-  render() {
-    if (this.state.note === null) {
-      return <p>Tidak ada catatan</p>;
-    }
-
-    return (
-      <section className="detail-page">
-        <NoteDetail {...this.state.note} 
-        onDelete={this.onDeleteHandler} 
-        onArchive={this.onArchiveHandler} />
-      </section>
-    )
-  }
+  async function onArchiveHandler(id) {
+    await archiveNote(id);
+    navigate("/");
 }
 
-DetailPage.propTypes = {
-  id: PropTypes.string.isRequired,
-  navigate: PropTypes.func.isRequired,
-};
+  async function onUnarchiveHandler(id) {
+    await unarchiveNote(id);
+    navigate("/archives");
+}
 
-export default DetailPageWrapper;
+  if (isLoading) {
+    return <p>Sedang memuat...</p>;
+  }
+
+  return (
+    <section className="detail-page">
+      {note ? (
+        <NoteDetail 
+          {...note} 
+          onDelete={async () => {
+            await deleteNote(id);
+            navigate('/'); // Setelah dihapus, kembali ke halaman utama
+          }}
+          onArchive={async () => {
+            if (note.archived) {
+              await unarchiveNote(id);
+            } else {
+              await archiveNote(id);
+            }
+            navigate('/'); // Setelah diarsipkan atau unarsip, kembali ke halaman utama
+          }}
+        />
+      ) : (
+        <p>Catatan tidak ditemukan</p>
+      )}
+    </section>
+  )
+}
+
+export default DetailPage;
